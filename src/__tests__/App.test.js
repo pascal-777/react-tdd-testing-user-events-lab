@@ -1,7 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { getRoles, logRoles, render, screen } from "@testing-library/react";
 import '@testing-library/jest-dom';
 
 import App from "../App";
+import userEvent from "@testing-library/user-event";
+import { useEffect } from "react";
 
 // Portfolio Elements
 test("displays a top-level heading with the text `Hi, I'm _______`", () => {
@@ -66,26 +68,87 @@ test("displays the correct links", () => {
 
 // Newsletter Form - Initial State
 test("the form includes text inputs for name and email address", () => {
-  // your test code here
+ 
+  render(<App />);
+  const nameTextInput = screen.getByPlaceholderText('name');
+
+  expect(nameTextInput).toBeInTheDocument();
+
+  const emailTextInput = screen.getByPlaceholderText('email');
+
+  expect(emailTextInput).toBeInTheDocument();
 });
 
 test("the form includes three checkboxes to select areas of interest", () => {
-  // your test code here
+  
+  render(<App />);
+  const checkboxes = screen.getAllByRole('checkbox', {
+    checked: false,
+  })
+
+  expect(checkboxes[0]).toHaveAttribute('placeholder', 'apple');
+  expect(checkboxes[1]).toHaveAttribute('placeholder', 'pineapple');
+  expect(checkboxes[2]).toHaveAttribute('placeholder', 'pen');
 });
 
 test("the checkboxes are initially unchecked", () => {
-  // your test code here
+  
+  render(<App />);
+  const checkbox = screen.getAllByRole('checkbox', {
+    checked: false,
+  })
+  expect(checkbox).toHaveLength(3);
 });
 
 // Newsletter Form - Adding Responses
 test("the page shows information the user types into the name and email address form fields", () => {
-  // your test code here
+
+  render(<App />);
+
+  const nameTextInput = screen.getByPlaceholderText('name');
+  const emailTextInput = screen.getByPlaceholderText('email');
+
+  expect(nameTextInput).toHaveDisplayValue('');
+  expect(emailTextInput).toHaveDisplayValue('');
+
+  userEvent.type(nameTextInput, 'my name');
+  userEvent.type(emailTextInput, 'my email');
+
+  expect(nameTextInput).toHaveDisplayValue('my name');
+  expect(emailTextInput).toHaveDisplayValue('my email');
+
 });
 
 test("checked status of checkboxes changes when user clicks them", () => {
-  // your test code here
+ 
+  render(<App />);
+  let checkboxes = screen.getAllByRole('checkbox', {
+    checked: false,
+  })
+
+  expect(checkboxes[0]).toHaveAttribute('placeholder', 'apple');
+  expect(checkboxes[1]).toHaveAttribute('placeholder', 'pineapple');
+  expect(checkboxes[2]).toHaveAttribute('placeholder', 'pen');
+
+  userEvent.click(checkboxes[0]);
+  userEvent.click(checkboxes[1]);
+  userEvent.click(checkboxes[2]);
+
+  expect(checkboxes[0]).toBeChecked(true);
+  expect(checkboxes[1]).toBeChecked(true);
+  expect(checkboxes[2]).toBeChecked(true);
+
 });
 
 test("a message is displayed when the user clicks the Submit button", () => {
-  // your test code here
+  
+  render(<App />);
+  const formed = screen.getByTitle('submital-button');
+  const formMessage = screen.getByTitle('form_message');
+  
+  expect(formMessage.textContent).toEqual('this form has been submitted: false');
+  userEvent.click(formed);
+  expect(formMessage.textContent).toEqual('this form has been submitted: true');
+
+
 });
